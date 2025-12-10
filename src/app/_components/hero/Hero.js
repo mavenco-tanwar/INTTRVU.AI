@@ -63,7 +63,7 @@ function Hero() {
                 </p>
 
                 <p className="mt-1 text-[#C1272D] font-semibold font-poppins">
-                  7th Dec 2025
+                  25th Dec 2025
                 </p>
               </div>
 
