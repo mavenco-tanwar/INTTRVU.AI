@@ -29,11 +29,10 @@ function Footer() {
 
                   {/* TEXT */}
                   <p className="text-black/70 text-[16px] leading-7 font-poppins max-w-3xl">
-                At INTTRVU.AI, we&apos;re comrnitted to preparing today&apos;s workforce for tomorrow&apos;s technology demands.
-We empower learners to upskill in Data Science, Generative Al, Data Analytics, and Al through
-immersive, project-based programs. By fostering a strong community of learners and industry
-experts, we aim to create a future where everyone has the skills to succeed in an ever-evolving tech
-landscape,
+                At INTTRVU.AI, we’re committed to preparing today’s workforce for tomorrow’s technology demands.
+We empower learners to upskill in Data Science, Generative AI, Data Analytics, and AI through immersive, project-based programs.
+
+By fostering a strong community of learners and industry experts, we aim to create a future where everyone has the skills to succeed in an ever-evolving tech landscape.
                   </p>
                 </div>
               </div>

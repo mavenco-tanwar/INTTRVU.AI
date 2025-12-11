@@ -55,8 +55,7 @@ function Hero() {
               </div>
             </div>
 
-            <div className="flex flex-col md:flex-row items-center lg:items-start md:gap-3 gap-1 lg:justify-start justify-center mt-6 text-center md:text-left">
-              {/* LEFT TEXT */}
+            {/* <div className="flex flex-col md:flex-row items-center lg:items-start md:gap-3 gap-1 lg:justify-start justify-center mt-6 text-center md:text-left">
               <div>
                 <p className="text-sm text-black/80 font-medium font-poppins">
                   Application closes on
@@ -67,11 +66,10 @@ function Hero() {
                 </p>
               </div>
 
-              {/* TIMER COMPONENT */}
               <div className="md:ml-3">
                 <Countdown targetDate="2025-12-07T00:00:00" />
               </div>
-            </div>
+            </div> */}
           </div>
 
           {/* RIGHT IMAGE — hidden on small screens */}

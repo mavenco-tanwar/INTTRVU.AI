@@ -148,10 +148,8 @@ export default function FormPopUp({
               className="w-full border-b text-black border-slate-200 py-3 placeholder:text-slate-400 outline-none"
             />
 
-            {/* PHONE FIELD */}
             <div className="flex items-center gap-3 border-b border-slate-200 pb-2">
 
-              {/* HIDDEN BELOW 350px */}
               <div className="flex items-center gap-2 max-[350px]:hidden">
                 <Image src="/indian.jpg" alt="IN" width={28} height={20} />
                 <span className="text-slate-700">+91</span>
@@ -207,6 +205,7 @@ export default function FormPopUp({
               Apply For Counselling
             </button>
           </form>
+          <div class="npf_wgts" data-height="400px" data-w="6d50097018b6265f9de28709b4d645f9"></div>
         </div>
       </div>
     </div>

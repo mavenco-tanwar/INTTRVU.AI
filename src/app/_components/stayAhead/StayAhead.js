@@ -60,7 +60,7 @@ function StayAhead() {
           leading-3.5 font-poppins
           text-center md:text-left
         ">
-          *Across all Great Learning programs
+          *Across all INTTRVU programs
         </p>
       </div>
 
