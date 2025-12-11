@@ -120,30 +120,30 @@ function Curriculum() {
             </div>
 
             {/* STATS BOXES */}
-            <div className="flex flex-col sm:flex-row gap-6 mb-8 justify-center lg:justify-start">
+            <div className="flex gap-6 mb-8 flex-row overflow-x-scroll w-full justify-start sm:flex-row sm:overflow-visible sm:justify-center lg:justify-start">
               <div className="p-2 flex gap-4 justify-center items-center  bg-white rounded-lg w-full sm:w-auto">
-                <div className="py-2 px-4 bg-[#ffbc4c] rounded-4xl text-[20px] font-poppins">
+                <div className="p-2 text-[16px] bg-[#ffbc4c] rounded-4xl font-poppins sm:py-2 sm:px-4 sm:text-[20px]">
                   15+
                 </div>
-                <p className="text-[18px] sm:text-[20px] font-semibold font-poppins">
+                <p className="text-[16px] sm:text-[20px] font-semibold font-poppins">
                   Tools
                 </p>
               </div>
 
               <div className="p-2 flex gap-4 justify-center items-center bg-white rounded-lg w-full sm:w-auto">
-                <div className="py-2 px-4 bg-[#ffbc4c] rounded-4xl text-[20px] font-poppins">
+                <div className="p-2 text-[16px] bg-[#ffbc4c] rounded-4xl font-poppins sm:py-2 sm:px-4 sm:text-[20px]">
                   15+
                 </div>
-                <p className="text-[18px] sm:text-[20px] font-semibold font-poppins">
+                <p className="text-[16px] sm:text-[20px] font-semibold font-poppins">
                   Case Studies
                 </p>
               </div>
 
               <div className="p-2 flex gap-4 justify-center items-center bg-white rounded-lg w-full sm:w-auto">
-                <div className="py-2 px-4 bg-[#ffbc4c] rounded-4xl text-[20px] font-poppins">
+                <div className="p-2 text-[16px] bg-[#ffbc4c] rounded-4xl font-poppins sm:py-2 sm:px-4 sm:text-[20px]">
                   20+
                 </div>
-                <p className="text-[18px] sm:text-[20px] font-semibold font-poppins">
+                <p className="text-[16px] sm:text-[20px] font-semibold font-poppins">
                   Projects
                 </p>
               </div>
