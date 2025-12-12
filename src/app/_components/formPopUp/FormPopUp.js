@@ -1,8 +1,6 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import Image from "next/image";
-import { loadNPF } from "@/utils/loadNPF";
 
 export default function FormPopUp({
   open = false,
@@ -15,52 +13,40 @@ export default function FormPopUp({
   const overlayRef = useRef(null);
   const containerRef = useRef(null);
 
-  // When modal opens, ensure script is loaded and then initialize widget
+  // Safely move the widget into the modal when open
   useEffect(() => {
     if (!open) return;
 
-    console.log("[FormPopUp] Modal opened -> initializing/loadNPF");
+    const originalContainer = document.querySelector(`.npf_wgts[data-w="${widgetId}"]`);
+    const modalContainer = containerRef.current;
 
-    let mounted = true;
+    if (!originalContainer) {
+      console.warn("[FormPopUp] Original widget container not found");
+      return;
+    }
 
-    loadNPF({ maxWaitMs: 15000, pollInterval: 150 })
-      .then(() => {
-        if (!mounted) return;
+    if (!modalContainer) return;
 
-        console.log("[FormPopUp] loadNPF resolved -> preparing widget container");
+    // Avoid moving the modal into itself
+    if (!modalContainer.contains(originalContainer)) {
+      // Insert a placeholder so we can move it back later
+      const placeholder = document.createElement("div");
+      placeholder.id = "widget-placeholder";
+      originalContainer.parentNode.insertBefore(placeholder, originalContainer);
 
-        const target =
-          containerRef.current ||
-          document.querySelector(`.npf_wgts[data-w="${widgetId}"]`);
-        if (!target) {
-          console.warn("[FormPopUp] No container found for widget");
-          return;
+      // Move widget into modal
+      modalContainer.appendChild(originalContainer);
+      console.log("[FormPopUp] Widget moved into modal");
+
+      return () => {
+        // Restore the widget to original place on modal close
+        const ph = document.querySelector("#widget-placeholder");
+        if (ph) {
+          ph.parentNode.replaceChild(originalContainer, ph);
+          console.log("[FormPopUp] Widget moved back to original container");
         }
-
-        // Clear any previous content
-        target.innerHTML = "";
-
-        if (typeof window?.cIframe === "function") {
-          // small delay to ensure container is in DOM
-          setTimeout(() => {
-            console.log(
-              `[FormPopUp] Calling window.cIframe('[data-w="${widgetId}"]')`
-            );
-            window.cIframe(`[data-w="${widgetId}"]`);
-          }, 50);
-        } else {
-          console.warn(
-            "[FormPopUp] window.cIframe is not a function after loadNPF resolved"
-          );
-        }
-      })
-      .catch((err) => {
-        console.error("[FormPopUp] loadNPF failed:", err);
-      });
-
-    return () => {
-      mounted = false;
-    };
+      };
+    }
   }, [open, widgetId]);
 
   // Focus trap + ESC close
@@ -68,11 +54,9 @@ export default function FormPopUp({
     if (!open) return;
 
     const timeoutId = setTimeout(() => {
-      modalRef.current
-        ?.querySelector(
-          "input, select, button, [tabindex]:not([tabindex='-1'])"
-        )
-        ?.focus();
+      modalRef.current?.querySelector(
+        "input, select, button, [tabindex]:not([tabindex='-1'])"
+      )?.focus();
     }, 100);
 
     const handleKeyDown = (e) => {
@@ -99,9 +83,9 @@ export default function FormPopUp({
     >
       <div
         ref={modalRef}
-        className="relative max-w-6xl bg-white rounded-xl shadow-2xl overflow-y-auto flex flex-col lg:flex-row items-center"
+        className="relative max-w-6xl bg-white rounded-xl shadow-2xl overflow-hidden flex flex-col lg:flex-row align-items-center overflow-y-auto"
+        style={{ alignItems: "center" }}
       >
-        {/* Close Button */}
         <button
           onClick={onClose}
           aria-label="Close"
@@ -118,26 +102,20 @@ export default function FormPopUp({
           </svg>
         </button>
 
-        {/* Left Image */}
-        <div className="hidden lg:flex lg:w-1/2 bg-white items-center justify-center p-0">
+        <div className="hidden overflow-hidden lg:flex lg:w-1/2 bg-white items-center justify-center p-0">
           <div className="w-full">
-            <Image
+            <img
               src={imageSrc}
               alt="Promo"
-              width={480}
-              height={300}
-              className="h-auto object-cover"
-              priority
+              className="h-auto object-cover w-full"
             />
           </div>
         </div>
 
-        {/* Right Content / Widget */}
         <div className="w-full lg:w-1/2 px-8 py-12 lg:px-12 lg:py-10">
           <h3 className="text-2xl font-semibold text-slate-900 mb-6 text-center">
             {text}
           </h3>
-
           <div
             ref={containerRef}
             className="npf_wgts"

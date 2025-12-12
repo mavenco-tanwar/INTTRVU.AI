@@ -53,12 +53,7 @@ function FloatCard() {
         <h2 className="text-2xl sm:text-3xl font-semibold text-center text-black/80 mb-6">
           Free Counselling with Experts
         </h2>
-
-        <div
-          className="npf_wgts"
-          data-height="400px"
-          data-w={widgetId}
-        />
+        <div id="float-card-widget" className="npf_wgts" data-w="6d50097018b6265f9de28709b4d645f9" data-height="400px" />
       </div>
     </div>
   );
