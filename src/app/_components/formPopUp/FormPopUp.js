@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
 
 export default function FormPopUp({
@@ -8,55 +8,63 @@ export default function FormPopUp({
   onClose = () => {},
   imageSrc = "/popup-left.jpg",
   text,
+  widgetId = "6d50097018b6265f9de28709b4d645f9", // ✅ Now used
 }) {
   const modalRef = useRef(null);
   const overlayRef = useRef(null);
+  const containerRef = useRef(null);
 
-  const [result, setResult] = useState("");
-
-  // Focus trap + ESC close
+  // ✅ Load widget script ONCE globally
   useEffect(() => {
-    if (open) {
-      const t = setTimeout(() => {
-        modalRef.current?.querySelector("input, select, button")?.focus();
-      }, 80);
-
-      const onKey = (e) => {
-        if (e.key === "Escape") onClose();
-      };
-
-      document.addEventListener("keydown", onKey);
-      return () => {
-        clearTimeout(t);
-        document.removeEventListener("keydown", onKey);
-      };
+    const scriptId = "npf-widget-js";
+    if (!document.getElementById(scriptId)) {
+      const script = document.createElement("script");
+      script.id = scriptId;
+      script.type = "text/javascript";
+      script.async = true;
+      script.src = "https://widgets.in8.nopaperforms.com/emwgts.js";
+      document.body.appendChild(script);
     }
+  }, []);
+
+  // ✅ Trigger widget initialization when modal opens
+  const initWidget = useCallback(() => {
+    if (open && containerRef.current && window.cIframe) {
+      // Force widget refresh by clearing and reinitializing
+      containerRef.current.innerHTML = "";
+      setTimeout(() => {
+        if (window.cIframe) window.cIframe();
+      }, 100);
+    }
+  }, [open]);
+
+  // ✅ Initialize widget when modal opens
+  useEffect(() => {
+    initWidget();
+  }, [initWidget]);
+
+  // ✅ Focus trap + ESC close (fixed)
+  useEffect(() => {
+    if (!open) return;
+
+    const timeoutId = setTimeout(() => {
+      modalRef.current?.querySelector("input, select, button, [tabindex]:not([tabindex='-1'])")?.focus();
+    }, 100);
+
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") {
+        onClose();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      clearTimeout(timeoutId);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
   }, [open, onClose]);
 
   if (!open) return null;
-
-  // Web3Forms submit handler
-  const onSubmit = async (event) => {
-    event.preventDefault();
-    setResult("Sending...");
-
-    const formData = new FormData(event.target);
-    formData.append("access_key", "6e46627e-66a1-4662-86f6-f25fc529e8b9");
-
-    const response = await fetch("https://api.web3forms.com/submit", {
-      method: "POST",
-      body: formData,
-    });
-
-    const data = await response.json();
-
-    if (data.success) {
-      setResult("Form Submitted Successfully");
-      event.target.reset();
-    } else {
-      setResult("Error submitting form");
-    }
-  };
 
   return (
     <div
@@ -64,9 +72,8 @@ export default function FormPopUp({
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-6"
       role="dialog"
       aria-modal="true"
-      onClick={(e) => {
-        if (e.target === overlayRef.current) onClose();
-      }}
+      aria-labelledby="modal-title"
+      onClick={(e) => e.target === overlayRef.current && onClose()}
     >
       <div
         ref={modalRef}
@@ -74,9 +81,9 @@ export default function FormPopUp({
           relative max-w-6xl bg-white rounded-xl shadow-2xl 
           overflow-hidden flex flex-col lg:flex-row 
           align-items-center
-          max-h-[70vh] overflow-y-auto
+          overflow-y-auto
         "
-        style={{ maxHeight: 450, alignItems: "center" }}
+        style={{ alignItems: "center" }}
       >
         {/* Close button */}
         <button
@@ -92,14 +99,13 @@ export default function FormPopUp({
             hover:bg-slate-50
           "
         >
-          <svg width="16" height="16" viewBox="0 0 24 24">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
             <path
               d="M18 6 L6 18 M6 6 L18 18"
               stroke="currentColor"
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
-              fill="none"
             />
           </svg>
         </button>
@@ -107,54 +113,30 @@ export default function FormPopUp({
         {/* Left image */}
         <div className="hidden overflow-hidden lg:flex lg:w-1/2 bg-white items-center justify-center p-0">
           <div className="w-full">
-          <Image
-            src={imageSrc}
-            alt="Promo"
-            width={480}
-            height={300}
-            className="h-auto object-cover"
+            <Image
+              src={imageSrc}
+              alt="Promo"
+              width={480}
+              height={300}
+              className="h-auto object-cover"
+              priority
             />
           </div>
         </div>
 
-        {/* Right Form */}
+        {/* Right side */}
         <div className="w-full lg:w-1/2 px-8 py-12 lg:px-12 lg:py-10">
           <h3 className="text-2xl font-semibold text-slate-900 mb-6 text-center">
             {text}
           </h3>
 
-          <form className="flex flex-col gap-5" onSubmit={onSubmit}>
-            <input
-              type="text"
-              name="name"
-              placeholder="Full Name"
-              required
-              className="w-full text-black border-b border-slate-200 py-3 placeholder:text-slate-400 outline-none"
-            />
-
-            <input
-              type="email"
-              name="email"
-              placeholder="Email"
-              required
-              className="w-full text-black border-b border-slate-200 py-3 placeholder:text-slate-400 outline-none"
-            />
-
-            <textarea
-              name="message"
-              placeholder="Your Message"
-              className="w-full text-black border-b border-slate-200 py-3 placeholder:text-slate-400 outline-none"
-            ></textarea>
-
-            <button
-              type="submit"
-              className="mt-4 w-full bg-[#1472F2] hover:bg-[#0f5ccc] text-white font-semibold py-3.5 rounded-lg cursor-pointer"
-            >
-              Submit
-            </button>
-
-            <p className="text-sm text-center text-slate-500 mt-2">{result}</p>
-          </form>
+          {/* ✅ Fixed widget container with dynamic widgetId */}
+          <div
+            ref={containerRef}
+            className="npf_wgts"
+            data-height="400px"
+            data-w={widgetId}
+          />
         </div>
       </div>
     </div>

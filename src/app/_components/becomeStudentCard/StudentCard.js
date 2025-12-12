@@ -31,8 +31,14 @@ function StudentCard() {
            setOpen(true)
         }
         } text={"START NOW"} reff={"#"} clas={"mt-6 bg-white text-black font-semibold px-8 py-3 rounded-xl"}/>
-          <FormPopUp open={open} text="Apply For Counselling" onClose={() => setOpen(false)} imageSrc="/emloy.jpeg" submitRedirect="https://inttrvu.ai/thank-you-data-science/" />
-           
+          {/* <FormPopUp open={open} text="Apply For Counselling" onClose={() => setOpen(false)} imageSrc="/emloy.jpeg" submitRedirect="https://inttrvu.ai/thank-you-data-science/" /> */}
+          <FormPopUp 
+              open={open}
+              onClose={() => setOpen(false)}
+              text="Apply For Counselling"
+              imageSrc="/emloy.jpeg"
+              widgetId="6d50097018b6265f9de28709b4d645f9"
+            />
               </div>
             </div>
           </div>
