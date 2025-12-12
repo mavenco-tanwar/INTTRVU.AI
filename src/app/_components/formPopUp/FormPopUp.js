@@ -17,9 +17,7 @@ export default function FormPopUp({
 
   // When modal opens, ensure script is loaded and then initialize widget
   useEffect(() => {
-    if (!open) {
-      return;
-    }
+    if (!open) return;
 
     console.log("[FormPopUp] Modal opened -> initializing/loadNPF");
 
@@ -27,38 +25,33 @@ export default function FormPopUp({
 
     loadNPF({ maxWaitMs: 15000, pollInterval: 150 })
       .then(() => {
-        if (!mounted) {
-          console.warn("[FormPopUp] component unmounted before NPF ready");
-          return;
-        }
+        if (!mounted) return;
 
         console.log("[FormPopUp] loadNPF resolved -> preparing widget container");
 
-        try {
-          if (!containerRef.current) {
-            console.warn("[FormPopUp] containerRef missing - creating fallback div");
-            // fallback: attempt to find element with data-w attribute
-            const fallback = document.querySelector(`.npf_wgts[data-w="${widgetId}"]`);
-            if (fallback) {
-              console.log("[FormPopUp] found fallback widget container in DOM");
-            }
-          } else {
-            // Force refresh: clear container and let widget initializer render into it
-            containerRef.current.innerHTML = "";
-          }
+        const target =
+          containerRef.current ||
+          document.querySelector(`.npf_wgts[data-w="${widgetId}"]`);
+        if (!target) {
+          console.warn("[FormPopUp] No container found for widget");
+          return;
+        }
 
-          if (typeof window?.cIframe === "function") {
-            console.log("[FormPopUp] Calling window.cIframe()");
-            window.cIframe();
-            // small extra tick to allow widget to render
-            setTimeout(() => {
-              console.log("[FormPopUp] window.cIframe() called — check DOM for rendered iframe");
-            }, 300);
-          } else {
-            console.warn("[FormPopUp] window.cIframe is not a function after loadNPF resolved");
-          }
-        } catch (err) {
-          console.error("[FormPopUp] Error initializing widget:", err);
+        // Clear any previous content
+        target.innerHTML = "";
+
+        if (typeof window?.cIframe === "function") {
+          // small delay to ensure container is in DOM
+          setTimeout(() => {
+            console.log(
+              `[FormPopUp] Calling window.cIframe('[data-w="${widgetId}"]')`
+            );
+            window.cIframe(`[data-w="${widgetId}"]`);
+          }, 50);
+        } else {
+          console.warn(
+            "[FormPopUp] window.cIframe is not a function after loadNPF resolved"
+          );
         }
       })
       .catch((err) => {
@@ -75,7 +68,11 @@ export default function FormPopUp({
     if (!open) return;
 
     const timeoutId = setTimeout(() => {
-      modalRef.current?.querySelector("input, select, button, [tabindex]:not([tabindex='-1'])")?.focus();
+      modalRef.current
+        ?.querySelector(
+          "input, select, button, [tabindex]:not([tabindex='-1'])"
+        )
+        ?.focus();
     }, 100);
 
     const handleKeyDown = (e) => {
@@ -102,27 +99,44 @@ export default function FormPopUp({
     >
       <div
         ref={modalRef}
-        className="relative max-w-6xl bg-white rounded-xl shadow-2xl overflow-hidden flex flex-col lg:flex-row align-items-center overflow-y-auto"
-        style={{ alignItems: "center" }}
+        className="relative max-w-6xl bg-white rounded-xl shadow-2xl overflow-y-auto flex flex-col lg:flex-row items-center"
       >
+        {/* Close Button */}
         <button
           onClick={onClose}
           aria-label="Close"
           className="absolute cursor-pointer top-4 right-4 md:right-4 max-sm:right-2 z-20 w-8 h-8 rounded-full flex items-center justify-center border border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-            <path d="M18 6 L6 18 M6 6 L18 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            <path
+              d="M18 6 L6 18 M6 6 L18 18"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
           </svg>
         </button>
 
-        <div className="hidden overflow-hidden lg:flex lg:w-1/2 bg-white items-center justify-center p-0">
+        {/* Left Image */}
+        <div className="hidden lg:flex lg:w-1/2 bg-white items-center justify-center p-0">
           <div className="w-full">
-            <Image src={imageSrc} alt="Promo" width={480} height={300} className="h-auto object-cover" priority />
+            <Image
+              src={imageSrc}
+              alt="Promo"
+              width={480}
+              height={300}
+              className="h-auto object-cover"
+              priority
+            />
           </div>
         </div>
 
+        {/* Right Content / Widget */}
         <div className="w-full lg:w-1/2 px-8 py-12 lg:px-12 lg:py-10">
-          <h3 className="text-2xl font-semibold text-slate-900 mb-6 text-center">{text}</h3>
+          <h3 className="text-2xl font-semibold text-slate-900 mb-6 text-center">
+            {text}
+          </h3>
 
           <div
             ref={containerRef}
