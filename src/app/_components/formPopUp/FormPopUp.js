@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useCallback } from "react";
+import { loadNPF } from "@/utils/loadNPF";
 import Image from "next/image";
 
 export default function FormPopUp({
@@ -15,17 +16,17 @@ export default function FormPopUp({
   const containerRef = useRef(null);
 
   // ✅ Load widget script ONCE globally
-  useEffect(() => {
-    const scriptId = "npf-widget-js";
-    if (!document.getElementById(scriptId)) {
-      const script = document.createElement("script");
-      script.id = scriptId;
-      script.type = "text/javascript";
-      script.async = true;
-      script.src = "https://widgets.in8.nopaperforms.com/emwgts.js";
-      document.body.appendChild(script);
+useEffect(() => {
+  if (!open) return;
+
+  loadNPF().then(() => {
+    if (containerRef.current) {
+      containerRef.current.innerHTML = ""; // Force refresh
+      window.cIframe();                     // Safe now
     }
-  }, []);
+  });
+}, [open]);
+
 
   // ✅ Trigger widget initialization when modal opens
   const initWidget = useCallback(() => {

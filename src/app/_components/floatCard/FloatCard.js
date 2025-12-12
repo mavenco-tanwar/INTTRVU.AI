@@ -1,21 +1,14 @@
 "use client";
 import { useEffect } from "react";
+import { loadNPF } from "@/utils/loadNPF";
 
 function FloatCard() {
 
-  useEffect(() => {
-    const scriptId = "npf-widget-js";
-
-    // Load script only once
-    if (!document.getElementById(scriptId)) {
-      const script = document.createElement("script");
-      script.id = scriptId;
-      script.type = "text/javascript";
-      script.async = true;
-      script.src = "https://widgets.in8.nopaperforms.com/emwgts.js";
-      document.body.appendChild(script);
-    }
-  }, []); // IMPORTANT: Always include this from the start
+useEffect(() => {
+  loadNPF().then(() => {
+    window.cIframe(); // Safe load
+  });
+}, []);
 
   return (
     <div className="h-full w-[420px] lg:left-[67%] absolute top-0 p-4 hidden min-[1150px]:block">
