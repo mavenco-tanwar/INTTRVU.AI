@@ -160,13 +160,13 @@ function Curriculum() {
                   "rounded-lg font-poppins font-medium tracking-[1.25px] leading-6  py-4 px-10 text-white hover:bg-[#0f4cd1]"
                 }
               />
-              {/* <FormPopUp
+              <FormPopUp 
                 open={open}
-                text="Download Curriculum"
                 onClose={() => setOpen(false)}
+                text="Apply For Counselling"
                 imageSrc="/emloy.jpeg"
-                submitRedirect="https://inttrvu.ai/thank-you-data-science/"
-              /> */}
+                widgetId="6d50097018b6265f9de28709b4d645f9" // ✅ Works!
+              />
             </div>
           </div>
         </div>
