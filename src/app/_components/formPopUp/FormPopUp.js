@@ -56,32 +56,52 @@ export default function FormPopUp({
         target.innerHTML = "";
 
         if (typeof window?.cIframe === "function") {
-          // small delay to ensure container is in DOM
-          setTimeout(() => {
+          // Multiple initialization attempts with increasing delays
+          const attempts = [100, 500, 1000];
+          let attemptIndex = 0;
+
+          const tryInitialize = () => {
             try {
               console.log(
-                `[FormPopUp] Calling window.cIframe('[data-w="${widgetId}"]')`
+                `[FormPopUp] Attempt ${attemptIndex + 1}: Calling window.cIframe('[data-w="${widgetId}"]')`
               );
+              
+              // Clear and reinitialize
+              target.innerHTML = "";
+              target.setAttribute('data-w', widgetId);
+              target.setAttribute('data-height', '400px');
+              
               window.cIframe(`[data-w="${widgetId}"]`);
               
-              // Check if widget actually rendered
+              // Check if widget rendered
               setTimeout(() => {
                 const iframe = target.querySelector('iframe');
                 if (iframe) {
                   console.log("[FormPopUp] Widget iframe detected successfully");
                   setLoadState("success");
+                } else if (attemptIndex < attempts.length - 1) {
+                  attemptIndex++;
+                  console.warn(`[FormPopUp] Attempt ${attemptIndex} failed, retrying...`);
+                  setTimeout(tryInitialize, attempts[attemptIndex]);
                 } else {
-                  console.warn("[FormPopUp] No iframe found after cIframe call");
+                  console.error("[FormPopUp] All initialization attempts failed");
                   setLoadState("error");
-                  setErrorMessage("Widget failed to render");
+                  setErrorMessage("Widget failed to render after multiple attempts");
                 }
-              }, 1000);
+              }, 800);
             } catch (error) {
               console.error("[FormPopUp] Error calling cIframe:", error);
-              setLoadState("error");
-              setErrorMessage(error.message);
+              if (attemptIndex < attempts.length - 1) {
+                attemptIndex++;
+                setTimeout(tryInitialize, attempts[attemptIndex]);
+              } else {
+                setLoadState("error");
+                setErrorMessage(error.message);
+              }
             }
-          }, 50);
+          };
+
+          setTimeout(tryInitialize, attempts[0]);
         } else {
           console.error(
             "[FormPopUp] window.cIframe is not a function after loadNPF resolved"
