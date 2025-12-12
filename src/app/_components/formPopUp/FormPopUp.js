@@ -97,6 +97,28 @@ export default function FormPopUp({
           const iframe = container.querySelector("iframe");
           if (iframe) {
             console.log("[FormPopUp] ✅ Widget iframe successfully created");
+            console.log("[FormPopUp] Iframe dimensions:", {
+              width: iframe.style.width || iframe.width,
+              height: iframe.style.height || iframe.height,
+              display: iframe.style.display,
+              visibility: iframe.style.visibility
+            });
+            
+            // Force iframe to be visible with proper dimensions
+            if (!iframe.style.height || iframe.style.height === '0px') {
+              iframe.style.height = '400px';
+              iframe.style.minHeight = '400px';
+            }
+            if (!iframe.style.width || iframe.style.width === '0px') {
+              iframe.style.width = '100%';
+            }
+            iframe.style.display = 'block';
+            iframe.style.visibility = 'visible';
+            
+            console.log("[FormPopUp] Iframe dimensions after fix:", {
+              width: iframe.style.width,
+              height: iframe.style.height
+            });
           } else {
             console.warn("[FormPopUp] ⚠️ No iframe found after initialization");
             console.log("[FormPopUp] Container HTML:", container.innerHTML);
@@ -210,6 +232,19 @@ export default function FormPopUp({
               transition: "opacity 0.3s"
             }}
           />
+
+          {/* Force iframe visibility with global styles */}
+          <style jsx global>{`
+            .npf_wgts iframe {
+              width: 100% !important;
+              min-height: 400px !important;
+              height: 400px !important;
+              display: block !important;
+              visibility: visible !important;
+              opacity: 1 !important;
+              border: none !important;
+            }
+          `}</style>
 
           {/* Fallback message after retries */}
           {retryCount >= 3 && (
