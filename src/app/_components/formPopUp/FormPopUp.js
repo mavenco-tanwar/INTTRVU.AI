@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { loadNPF } from "@/utils/loadNPF";
 
 export default function FormPopUp({
   open = false,
@@ -14,126 +13,116 @@ export default function FormPopUp({
   const modalRef = useRef(null);
   const overlayRef = useRef(null);
   const containerRef = useRef(null);
-  const [loadState, setLoadState] = useState("idle"); // idle, loading, success, error
-  const [errorMessage, setErrorMessage] = useState("");
+  const [isScriptLoaded, setIsScriptLoaded] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
 
-  // When modal opens, ensure script is loaded and then initialize widget
+  // Load the NPF script once on mount
   useEffect(() => {
-    if (!open) {
-      setLoadState("idle");
-      setErrorMessage("");
+    const scriptId = "npf-widget-script";
+    
+    // Check if script already exists
+    if (document.getElementById(scriptId)) {
+      setIsScriptLoaded(true);
       return;
     }
 
-    console.log("[FormPopUp] Modal opened -> initializing/loadNPF");
-    console.log("[FormPopUp] Environment:", process.env.NODE_ENV);
-    console.log("[FormPopUp] Widget ID:", widgetId);
-    
-    setLoadState("loading");
-    let mounted = true;
+    const script = document.createElement("script");
+    script.id = scriptId;
+    script.type = "text/javascript";
+    script.async = true;
+    script.src = "https://widgets.in8.nopaperforms.com/emwgts.js";
 
-    loadNPF({ maxWaitMs: 20000, pollInterval: 150 })
-      .then(() => {
-        if (!mounted) return;
+    script.onload = () => {
+      console.log("[FormPopUp] NPF script loaded successfully");
+      setIsScriptLoaded(true);
+    };
 
-        console.log("[FormPopUp] loadNPF resolved -> preparing widget container");
-        console.log("[FormPopUp] window.cIframe available:", !!window.cIframe);
+    script.onerror = () => {
+      console.error("[FormPopUp] Failed to load NPF script");
+    };
 
-        const target =
-          containerRef.current ||
-          document.querySelector(`.npf_wgts[data-w="${widgetId}"]`);
+    document.body.appendChild(script);
+  }, []);
+
+  // Initialize widget when modal opens
+  useEffect(() => {
+    if (!open || !isScriptLoaded) return;
+
+    console.log("[FormPopUp] Modal opened, initializing widget...");
+
+    const initializeWidget = () => {
+      const container = containerRef.current;
+      if (!container) {
+        console.error("[FormPopUp] Container not found");
+        return;
+      }
+
+      // Clear container
+      container.innerHTML = "";
+
+      // Ensure data attributes are set
+      container.setAttribute("data-w", widgetId);
+      container.setAttribute("data-height", "400px");
+      container.className = "npf_wgts";
+
+      console.log("[FormPopUp] Container prepared:", container);
+      console.log("[FormPopUp] window.cIframe available:", !!window.cIframe);
+
+      if (typeof window.cIframe !== "function") {
+        console.error("[FormPopUp] window.cIframe is not available");
+        setTimeout(() => setRetryCount(c => c + 1), 1000);
+        return;
+      }
+
+      // Call cIframe with different selector formats
+      try {
+        console.log("[FormPopUp] Calling cIframe...");
         
-        if (!target) {
-          console.error("[FormPopUp] No container found for widget");
-          setLoadState("error");
-          setErrorMessage("Widget container not found");
-          return;
-        }
+        // Try multiple selector formats
+        const selectors = [
+          `[data-w="${widgetId}"]`,
+          `.npf_wgts[data-w="${widgetId}"]`,
+          `#${container.id || 'float-card-widget'}`
+        ];
 
-        console.log("[FormPopUp] Target element found:", target);
+        selectors.forEach((selector, index) => {
+          setTimeout(() => {
+            console.log(`[FormPopUp] Attempt ${index + 1} with selector: ${selector}`);
+            window.cIframe(selector);
+          }, index * 500);
+        });
 
-        // Clear any previous content
-        target.innerHTML = "";
-
-        if (typeof window?.cIframe === "function") {
-          // Multiple initialization attempts with increasing delays
-          const attempts = [100, 500, 1000];
-          let attemptIndex = 0;
-
-          const tryInitialize = () => {
-            try {
-              console.log(
-                `[FormPopUp] Attempt ${attemptIndex + 1}: Calling window.cIframe('[data-w="${widgetId}"]')`
-              );
-              
-              // Clear and reinitialize
-              target.innerHTML = "";
-              target.setAttribute('data-w', widgetId);
-              target.setAttribute('data-height', '400px');
-              
-              window.cIframe(`[data-w="${widgetId}"]`);
-              
-              // Check if widget rendered
-              setTimeout(() => {
-                const iframe = target.querySelector('iframe');
-                if (iframe) {
-                  console.log("[FormPopUp] Widget iframe detected successfully");
-                  setLoadState("success");
-                } else if (attemptIndex < attempts.length - 1) {
-                  attemptIndex++;
-                  console.warn(`[FormPopUp] Attempt ${attemptIndex} failed, retrying...`);
-                  setTimeout(tryInitialize, attempts[attemptIndex]);
-                } else {
-                  console.error("[FormPopUp] All initialization attempts failed");
-                  setLoadState("error");
-                  setErrorMessage("Widget failed to render after multiple attempts");
-                }
-              }, 800);
-            } catch (error) {
-              console.error("[FormPopUp] Error calling cIframe:", error);
-              if (attemptIndex < attempts.length - 1) {
-                attemptIndex++;
-                setTimeout(tryInitialize, attempts[attemptIndex]);
-              } else {
-                setLoadState("error");
-                setErrorMessage(error.message);
-              }
+        // Check if iframe was created
+        setTimeout(() => {
+          const iframe = container.querySelector("iframe");
+          if (iframe) {
+            console.log("[FormPopUp] ✅ Widget iframe successfully created");
+          } else {
+            console.warn("[FormPopUp] ⚠️ No iframe found after initialization");
+            console.log("[FormPopUp] Container HTML:", container.innerHTML);
+            
+            // One more retry
+            if (retryCount < 3) {
+              setTimeout(() => setRetryCount(c => c + 1), 2000);
             }
-          };
+          }
+        }, 2000);
+      } catch (error) {
+        console.error("[FormPopUp] Error initializing widget:", error);
+      }
+    };
 
-          setTimeout(tryInitialize, attempts[0]);
-        } else {
-          console.error(
-            "[FormPopUp] window.cIframe is not a function after loadNPF resolved"
-          );
-          setLoadState("error");
-          setErrorMessage("Widget initialization failed");
-        }
-      })
-      .catch((err) => {
-        console.error("[FormPopUp] loadNPF failed:", err);
-        if (mounted) {
-          setLoadState("error");
-          setErrorMessage(err.message || "Failed to load form");
-        }
-      });
+    // Delay to ensure DOM is ready
+    const timer = setTimeout(initializeWidget, 300);
 
     return () => {
-      mounted = false;
+      clearTimeout(timer);
     };
-  }, [open, widgetId]);
+  }, [open, isScriptLoaded, widgetId, retryCount]);
 
   // Focus trap + ESC close
   useEffect(() => {
     if (!open) return;
-
-    const timeoutId = setTimeout(() => {
-      modalRef.current
-        ?.querySelector(
-          "input, select, button, [tabindex]:not([tabindex='-1'])"
-        )
-        ?.focus();
-    }, 100);
 
     const handleKeyDown = (e) => {
       if (e.key === "Escape") onClose();
@@ -141,7 +130,6 @@ export default function FormPopUp({
 
     document.addEventListener("keydown", handleKeyDown);
     return () => {
-      clearTimeout(timeoutId);
       document.removeEventListener("keydown", handleKeyDown);
     };
   }, [open, onClose]);
@@ -159,13 +147,14 @@ export default function FormPopUp({
     >
       <div
         ref={modalRef}
-        className="relative max-w-6xl bg-white rounded-xl shadow-2xl overflow-y-auto flex flex-col lg:flex-row items-center"
+        className="relative max-w-6xl bg-white rounded-xl shadow-2xl overflow-hidden flex flex-col lg:flex-row"
+        style={{ maxHeight: "90vh" }}
       >
         {/* Close Button */}
         <button
           onClick={onClose}
           aria-label="Close"
-          className="absolute cursor-pointer top-4 right-4 md:right-4 max-sm:right-2 z-20 w-8 h-8 rounded-full flex items-center justify-center border border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
+          className="absolute cursor-pointer top-4 right-4 md:right-4 max-sm:right-2 z-20 w-8 h-8 rounded-full flex items-center justify-center border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 transition-colors"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
             <path
@@ -193,59 +182,49 @@ export default function FormPopUp({
         </div>
 
         {/* Right Content / Widget */}
-        <div className="w-full lg:w-1/2 px-8 py-12 lg:px-12 lg:py-10">
-          <h3 className="text-2xl font-semibold text-slate-900 mb-6 text-center">
+        <div className="w-full lg:w-1/2 px-8 py-12 lg:px-12 lg:py-10 overflow-y-auto">
+          <h3 
+            id="modal-title"
+            className="text-2xl font-semibold text-slate-900 mb-6 text-center"
+          >
             {text}
           </h3>
 
-          {/* Loading State */}
-          {loadState === "loading" && (
-            <div className="flex flex-col items-center justify-center py-12">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
-              <p className="text-slate-600">Loading form...</p>
+          {/* Loading indicator */}
+          {!isScriptLoaded && (
+            <div className="flex items-center justify-center py-12">
+              <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600"></div>
             </div>
           )}
 
-          {/* Error State */}
-          {loadState === "error" && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
-              <svg
-                className="w-12 h-12 text-red-500 mx-auto mb-3"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                />
-              </svg>
-              <p className="text-red-800 font-medium mb-2">
-                Failed to load form
+          {/* Widget Container */}
+          <div
+            ref={containerRef}
+            id="float-card-widget"
+            className="npf_wgts"
+            data-w={widgetId}
+            data-height="400px"
+            style={{ 
+              minHeight: "400px",
+              opacity: isScriptLoaded ? 1 : 0.5,
+              transition: "opacity 0.3s"
+            }}
+          />
+
+          {/* Fallback message after retries */}
+          {retryCount >= 3 && (
+            <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg text-center">
+              <p className="text-yellow-800 text-sm mb-2">
+                Having trouble loading the form?
               </p>
-              <p className="text-red-600 text-sm mb-4">{errorMessage}</p>
               <button
                 onClick={() => window.location.reload()}
-                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition"
+                className="text-sm text-yellow-700 underline hover:text-yellow-900"
               >
-                Reload Page
+                Try refreshing the page
               </button>
             </div>
           )}
-
-          {/* Widget Container - always rendered */}
-          <div
-            ref={containerRef}
-            className="npf_wgts"
-            data-height="400px"
-            data-w={widgetId}
-            style={{
-              display: loadState === "loading" || loadState === "error" ? "none" : "block",
-              minHeight: "400px"
-            }}
-          />
         </div>
       </div>
     </div>
