@@ -1,14 +1,36 @@
 "use client";
+
 import { useEffect } from "react";
 import { loadNPF } from "@/utils/loadNPF";
 
 function FloatCard() {
+  useEffect(() => {
+    let mounted = true;
+    console.log("[FloatCard] mount -> calling loadNPF");
 
-useEffect(() => {
-  loadNPF().then(() => {
-    window.cIframe(); // Safe load
-  });
-}, []);
+    loadNPF({ maxWaitMs: 15000, pollInterval: 150 })
+      .then(() => {
+        if (!mounted) return;
+        console.log("[FloatCard] loadNPF resolved -> calling window.cIframe if available");
+        try {
+          if (typeof window?.cIframe === "function") {
+            window.cIframe();
+            console.log("[FloatCard] window.cIframe() called");
+          } else {
+            console.warn("[FloatCard] window.cIframe not available after loadNPF resolved");
+          }
+        } catch (err) {
+          console.error("[FloatCard] error calling window.cIframe():", err);
+        }
+      })
+      .catch((err) => {
+        console.error("[FloatCard] loadNPF failed:", err);
+      });
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   return (
     <div className="h-full w-[420px] lg:left-[67%] absolute top-0 p-4 hidden min-[1150px]:block">
@@ -21,7 +43,7 @@ useEffect(() => {
           className="npf_wgts"
           data-height="400px"
           data-w="6d50097018b6265f9de28709b4d645f9"
-        ></div>
+        />
       </div>
     </div>
   );
