@@ -49,7 +49,7 @@ function Hero() {
                   open={open}
                   onClose={() => setOpen(false)}
                   text="Apply For Counselling"
-                  imageSrc="/emloy.jpeg"
+                  imageSrc="/emloy.png"
                   widgetId="6d50097018b6265f9de28709b4d645f9" // ✅ Works!
                 />
               </div>
@@ -75,7 +75,7 @@ function Hero() {
           {/* RIGHT IMAGE — hidden on small screens */}
           <div className="hidden lg:block mr-3.5 relative w-full h-[450px]">
             <Image
-              src="/header-image.jpeg"
+              src="/header-image.png"
               alt="image"
               fill
               className="object-cover"

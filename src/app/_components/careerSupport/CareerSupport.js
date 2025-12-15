@@ -27,7 +27,7 @@ function CareerSupport() {
           />
           <CareerCards
             text={"Detailed Feedback and plan of action to crack the interviews"}
-            image={"/emloy.jpeg"}
+            image={"/emloy.png"}
           />
           <CareerCards
             text={"Course Completion Certificate"}

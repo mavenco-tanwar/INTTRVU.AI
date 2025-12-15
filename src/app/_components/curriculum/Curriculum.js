@@ -164,7 +164,7 @@ function Curriculum() {
                 open={open}
                 onClose={() => setOpen(false)}
                 text="Apply For Counselling"
-                imageSrc="/emloy.jpeg"
+                imageSrc="/emloy.png"
                 widgetId="6d50097018b6265f9de28709b4d645f9" // ✅ Works!
               />
             </div>
