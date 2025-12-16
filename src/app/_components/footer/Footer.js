@@ -17,9 +17,9 @@ function Footer() {
                 {/* Logo and text */}
                 <div className="flex-col md:flex-row gap-6 md:gap-12 items-start">
                   {/* LOGO */}
-                  <div className="w-[180px] sm:w-[220px] md:w-[260px] mb-4  shrink-0">
+                  <div className="w-[180px] mx-auto md:mx-0 sm:w-[220px] md:w-[260px] mb-4 shrink-0">
                     <Image
-                      src="/logo.png" // <-- change this URL only
+                      src="/logo.png"
                       alt="Great Learning"
                       width={260}
                       height={120}

@@ -30,7 +30,7 @@ function Curriculum() {
                   width={72}
                   height={72}
                 />
-                <p className="text-xl sm:text-2xl font-poppins font-medium">
+                <p className="text-xl sm:text-2xl font-poppins font-medium text-left">
                   Python
                 </p>
               </div>
@@ -41,7 +41,7 @@ function Curriculum() {
                   width={72}
                   height={72}
                 />
-                <p className="text-xl sm:text-2xl font-poppins font-medium">
+                <p className="text-xl sm:text-2xl font-poppins font-medium text-left">
                   SQL
                 </p>
               </div>
@@ -53,7 +53,7 @@ function Curriculum() {
                   width={72}
                   height={72}
                 />
-                <p className="text-xl sm:text-2xl font-poppins font-medium">
+                <p className="text-xl sm:text-2xl font-poppins font-medium text-left">
                   Tableau
                 </p>
               </div>
@@ -65,7 +65,7 @@ function Curriculum() {
                   width={72}
                   height={72}
                 />
-                <p className="text-xl sm:text-2xl font-poppins font-medium">
+                <p className="text-xl sm:text-2xl font-poppins font-medium text-left">
                   Power BI
                 </p>
               </div>
@@ -77,7 +77,7 @@ function Curriculum() {
                   width={72}
                   height={72}
                 />
-                <p className="text-xl sm:text-2xl font-poppins font-medium">
+                <p className="text-xl sm:text-2xl font-poppins font-medium text-left">
                   Machine Learning
                 </p>
               </div>
@@ -89,7 +89,7 @@ function Curriculum() {
                   width={72}
                   height={72}
                 />
-                <p className="text-xl sm:text-2xl font-poppins font-medium">
+                <p className="text-xl sm:text-2xl font-poppins font-medium text-left">
                   Deep Learning
                 </p>
               </div>
@@ -101,7 +101,7 @@ function Curriculum() {
                   width={72}
                   height={72}
                 />
-                <p className="text-xl sm:text-2xl font-poppins font-medium">
+                <p className="text-xl sm:text-2xl font-poppins font-medium text-left">
                   Natural Language Processing
                 </p>
               </div>
@@ -113,7 +113,7 @@ function Curriculum() {
                   width={72}
                   height={72}
                 />
-                <p className="text-xl sm:text-2xl font-poppins font-medium">
+                <p className="text-xl sm:text-2xl font-poppins font-medium text-left">
                   Generative AI
                 </p>
               </div>

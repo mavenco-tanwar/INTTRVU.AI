@@ -5,6 +5,11 @@ import Button from "@/app/ui/button/Button";
 import CompreLine from "./CompreLine";
 import Countdown from "./Countdown";
 import FormPopUp from "../formPopUp/FormPopUp";
+import {
+  ClockIcon,
+  GlobeAltIcon,
+  StarIcon,
+} from "@heroicons/react/24/solid";
 
 function Hero() {
   const [open, setOpen] = useState(false);
@@ -30,8 +35,21 @@ function Hero() {
                 required.
               </p>
 
-              <p className="text-[#444] mb-5 font-poppins font-medium tracking-[0.15px] leading-tight">
-                7.5 Months · Online Certificate · Rated 4.7/5 
+              <p className="flex flex-wrap items-start gap-x-6 gap-y-4 text-[#444] mb-5 font-poppins font-medium tracking-[0.15px] leading-tight">
+                <span className="flex flex-col lg:flex-row items-center gap-1.5">
+                  <ClockIcon className="w-6 h-6 md:w-8 md:h-8 text-gray-500" />
+                  <span className="text-sm">7.5 Months</span>
+                </span>
+
+                <span className="flex flex-col lg:flex-row items-center gap-1.5">
+                  <GlobeAltIcon className="w-6 h-6 md:w-8 md:h-8 text-gray-500" />
+                  <span className="text-sm">Online Certificate</span>
+                </span>
+
+                <span className="flex flex-col lg:flex-row items-center gap-1.5">
+                  <StarIcon className="w-6 h-6 md:w-8 md:h-8 text-yellow-500" />
+                  <span className="text-sm">Rated 4.7/5</span>
+                </span>
               </p>
 
               <div className="flex justify-center lg:justify-start">
@@ -73,12 +91,12 @@ function Hero() {
           </div>
 
           {/* RIGHT IMAGE — hidden on small screens */}
-          <div className="hidden lg:block mr-3.5 relative w-full h-[450px]">
+          <div className="relative w-[340px] lg:w-full h-[250px] lg:h-[450px] mr-0 lg:mr-3.5">
             <Image
               src="/header-image.png"
               alt="image"
               fill
-              className="object-cover"
+              className="rounded-xl lg:object-cover"
             />
           </div>
           {/* DEADLINE SECTION */}
