@@ -62,7 +62,7 @@ export default function FormPopUp({
 
       // Ensure data attributes are set
       container.setAttribute("data-w", widgetId);
-      container.setAttribute("data-height", "400px");
+      container.setAttribute("data-height", "428px");
       container.className = "npf_wgts";
 
       // Add a loading indicator
@@ -128,8 +128,8 @@ export default function FormPopUp({
             
             // Force iframe to be visible with proper dimensions
             if (!iframe.style.height || iframe.style.height === '0px') {
-              iframe.style.height = '400px';
-              iframe.style.minHeight = '400px';
+              iframe.style.height = '440px';
+              iframe.style.minHeight = '440px';
             }
             if (!iframe.style.width || iframe.style.width === '0px') {
               iframe.style.width = '100%';
@@ -245,7 +245,7 @@ export default function FormPopUp({
       <div
         ref={modalRef}
         className="relative max-w-6xl bg-white rounded-xl shadow-2xl overflow-hidden flex flex-col lg:flex-row"
-        style={{ maxHeight: "90vh" }}
+        style={{ maxHeight: "66vh" }}
       >
         {/* Close Button */}
         <button
@@ -279,10 +279,10 @@ export default function FormPopUp({
         </div>
 
         {/* Right Content / Widget */}
-        <div className="w-full lg:w-1/2 px-8 py-12 lg:px-12 lg:py-10 overflow-y-auto">
+        <div className="w-full lg:w-1/2 px-8 py-12 lg:px-12 lg:py-10">
           <h3 
             id="modal-title"
-            className="text-2xl font-semibold text-slate-900 mb-6 text-center"
+            className="text-2xl font-semibold text-slate-900 mb-5 text-center"
           >
             {text}
           </h3>
@@ -300,7 +300,7 @@ export default function FormPopUp({
             id="float-card-widget"
             className="npf_wgts"
             data-w={widgetId}
-            data-height="400px"
+            data-height="428px"
             style={{ 
               minHeight: "400px",
               width: "100%",
@@ -323,7 +323,7 @@ export default function FormPopUp({
             .npf_wgts iframe {
               width: 100% !important;
               min-height: 400px !important;
-              height: 400px !important;
+              height: 428px !important;
               display: block !important;
               visibility: visible !important;
               opacity: 1 !important;
