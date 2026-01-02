@@ -27,7 +27,7 @@ function Hero() {
               </span>
 
               <h1 className="text-3xl sm:text-4xl lg:text-5xl leading-tight mb-4 font-poppins font-semibold">
-                Data Science and AI Course
+                Data Science and GenAI Course
               </h1>
 
               <p className="text-[#444] mb-5 font-poppins">
